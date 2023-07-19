@@ -23,7 +23,9 @@ public class GeradorDeRelatorios {
 	public static final int FORMATO_ITALICO = 0b0010;
 
 	private Produto [] produtos;
-	private String algoritmo;
+	//private String algoritmo;
+	private OrdenacaoStrategy ordenacaoStrategy;
+	//private FiltroStrategy filtroStrategy;
 	private String criterio;
 	private String filtro;
 	private String argFiltro;
@@ -34,13 +36,14 @@ public class GeradorDeRelatorios {
 		this.produtos = new Produto[produtos.length];
 		
 		for(int i = 0; i < produtos.length; i++){
-		
 			this.produtos[i] = produtos[i];
 		}
 
-		this.algoritmo = algoritmo;
+		//this.algoritmo = algoritmo;
+		this.ordenacaoStrategy = ordenacaoStrategy;
 		this.criterio = criterio;
 		this.format_flags = format_flags;
+		//this.filtroStrategy = filtroStrategy;
 		this.filtro = filtro;
 		this.argFiltro = argFiltro;
 	}
