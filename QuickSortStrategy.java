@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class QuickSortStrategy implements OrdenacaoStrategy {
     private String criterio;
 
@@ -6,11 +8,11 @@ public class QuickSortStrategy implements OrdenacaoStrategy {
     }
 
     @Override
-    public void ordenar(Produto[] produtos) {
-        ordena(produtos, 0, produtos.length - 1);
+    public void ordenar(List<Produto> produtos) {
+        ordena(produtos, 0, produtos.size() - 1);
     }
 
-    private void ordena(Produto[] produtos, int ini, int fim) {
+    private void ordena(List<Produto> produtos, int ini, int fim) {
         // Implementação do QuickSort de acordo com o critério de ordenação
         // (criterio) que pode ser "descricao_c", "preco_c" ou "estoque_c".
         if (ini < fim) {
@@ -21,12 +23,12 @@ public class QuickSortStrategy implements OrdenacaoStrategy {
     }
 
 
-    private int partition(Produto[] produtos, int ini, int fim) {
-        Produto pivot = produtos[fim];
+    private int partition(List<Produto> produtos, int ini, int fim) {
+        Produto pivot = produtos.get(fim);
         int i = ini - 1;
 
         for (int j = ini; j < fim; j++) {
-            if (compare(produtos[j], pivot) < 0) {
+            if (compare(produtos.get(j), pivot) < 0) {
                 i++;
                 swap(produtos, i, j);
             }
@@ -37,10 +39,10 @@ public class QuickSortStrategy implements OrdenacaoStrategy {
     }
 
     // Método auxiliar para trocar elementos no produtosay
-    private void swap(Produto[] produtos, int i, int j) {
-        Produto temp = produtos[i];
-        produtos[i] = produtos[j];
-        produtos[j] = temp;
+    private void swap(List<Produto> produtos, int i, int j) {
+        Produto temp = produtos.get(i);
+        produtos.set(i, produtos.get(j));
+        produtos.set(j, temp);
     }
 
     private int compare(Produto p1, Produto p2) {

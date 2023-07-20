@@ -1,3 +1,5 @@
+import java.util.*;
+
 public interface OrdenacaoStrategy {
-    void ordenar(Produto[] produtos);
+    void ordenar(List<Produto> produtos);
 }
