@@ -46,9 +46,27 @@ public class QuickSortStrategy implements OrdenacaoStrategy {
     }
 
     private int compare(Produto p1, Produto p2) {
-        // A lógica de comparação vai depender do critério escolhido
-        // Neste exemplo, estamos comparando pelo atributo de descrição em ordem crescente
-        return p1.getDescricao().compareToIgnoreCase(p2.getDescricao());
+        if (criterio.equals(GeradorDeRelatorios.CRIT_DESC_CRESC)) {
+            return p1.getDescricao().compareToIgnoreCase(p2.getDescricao());
+        } else if (criterio.equals(GeradorDeRelatorios.CRIT_PRECO_CRESC)) {
+            if (p1.getPreco() < p2.getPreco()) {
+                return -1; 
+            } else if (p1.getPreco() > p2.getPreco()) {
+                return 1; 
+            } else {
+                return 0; 
+            }
+        } else if (criterio.equals(GeradorDeRelatorios.CRIT_ESTOQUE_CRESC)) {
+            if (p1.getQtdEstoque() < p2.getQtdEstoque()) {
+                return -1; 
+            } else if (p1.getQtdEstoque() > p2.getQtdEstoque()) {
+                return 1; 
+            } else {
+                return 0; 
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid sorting criterion: " + criterio);
+        }
     }
 }
 

@@ -1,4 +1,6 @@
 import java.io.PrintWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.util.*;
@@ -26,6 +28,7 @@ public class GeradorDeRelatorios {
 	private String algoritmo;
 	private OrdenacaoStrategy ordenacaoStrategy;
 	private FiltroStrategy filtroStrategy;
+	//private FormatacaoStrategy formatacaoStrategy;
 	private String criterio;
 	private String filtro;
 	private String argFiltro;
@@ -36,17 +39,9 @@ public class GeradorDeRelatorios {
 
 		this.produtos = new ArrayList<Produto>(produtos);
 
-		/*
-		 * for(int i = 0; i < produtos.size(); i++){
-		 * this.produtos[i] = produtos[i];
-		 * }
-		 */
-
 		this.algoritmo = algoritmo;
-		// this.ordenacaoStrategy = ordenacaoStrategy;
 		this.criterio = criterio;
 		this.format_flags = format_flags;
-		// this.filtroStrategy = filtroStrategy;
 		this.filtro = filtro;
 		this.argFiltro = argFiltro;
 	}
@@ -87,11 +82,11 @@ public void geraRelatorio(String arquivoSaida) throws IOException {
         if (filtro.equals(FILTRO_TODOS)) {
             produtosFiltrados.addAll(produtos);
         } else if (filtro.equals(FILTRO_ESTOQUE_MENOR_OU_IQUAL_A)) {
-            FiltroStrategy filtroEstoque = new FiltroEstoque();
-            produtosFiltrados.addAll(filtroEstoque.filtrar(produtos, argFiltro));
+            filtroStrategy = new FiltroEstoque();
+            produtosFiltrados.addAll(filtroStrategy.filtrar(produtos, argFiltro));
         } else if (filtro.equals(FILTRO_CATEGORIA_IGUAL_A)) {
-            FiltroStrategy filtroCategoria = new FiltroCategoria();
-            produtosFiltrados.addAll(filtroCategoria.filtrar(produtos, argFiltro));
+            filtroStrategy = new FiltroCategoria();
+            produtosFiltrados.addAll(filtroStrategy.filtrar(produtos, argFiltro));
         } else {
             throw new RuntimeException("Filtro invalido!");
         }
@@ -99,23 +94,23 @@ public void geraRelatorio(String arquivoSaida) throws IOException {
         for (Produto p : produtosFiltrados) {
             out.print("<li>");
 
-            if ((format_flags & FORMATO_ITALICO) > 0) {
+            /* if ((format_flags & FORMATO_ITALICO) > 0) {
                 out.print("<span style=\"font-style:italic\">");
             }
 
             if ((format_flags & FORMATO_NEGRITO) > 0) {
                 out.print("<span style=\"font-weight:bold\">");
-            }
+            } */
 
             out.print(p.formataParaImpressao());
 
-            if ((format_flags & FORMATO_NEGRITO) > 0) {
+            /* if ((format_flags & FORMATO_NEGRITO) > 0) {
                 out.print("</span>");
             }
 
             if ((format_flags & FORMATO_ITALICO) > 0) {
                 out.print("</span>");
-            }
+            } */
 
             out.println("</li>");
             count++;
@@ -128,9 +123,53 @@ public void geraRelatorio(String arquivoSaida) throws IOException {
     } // O recurso PrintWriter é automaticamente fechado ao sair do bloco try
 }
 
-
 	public static List<Produto> carregaProdutos() {
-		List<Produto> produtos = List.of(
+		List<Produto> produtos = new ArrayList<Produto>();
+		Scanner in;
+		try {
+            in = new Scanner(new File("produtos.csv"));
+			if (in.hasNextLine()) {
+				in.nextLine();
+			}
+
+			List<String[]> lines = new ArrayList<String[]>();
+        	while (in.hasNextLine()) {
+				String line = in.nextLine();
+				String[] arr = line.split(", ");
+				lines.add(arr);          
+        	}
+
+			for (String[] line : lines) {
+                int id = Integer.parseInt(line[0]);
+                String descricao = line[1];
+                String categoria = line[2];
+                int qtd = Integer.parseInt(line[3]);
+                double preco = Double.parseDouble(line[4]);
+
+                Produto produto = new ProdutoPadrao(id, descricao, categoria, qtd, preco);
+
+                boolean negrito = Boolean.parseBoolean(line[5]);
+                boolean italico = Boolean.parseBoolean(line[6]);
+                String cor = line[7];
+
+                if (negrito) {
+                    produto = new NegritoDecorator(produto);
+                }
+                if (italico) {
+                    produto = new ItalicoDecorator(produto);
+                }
+                if (!cor.isEmpty()) {
+                    produto = new CorDecorator(produto, cor);
+                }
+
+                produtos.add(produto);
+            }
+            in.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: produtos.csv");
+		}
+		/* List<Produto> produtos = List.of(
 				new ProdutoPadrao(1, "O Hobbit", "Livros", 2, 34.90),
 				new ProdutoPadrao(2, "Notebook Core i7", "Informatica", 5, 1999.90),
 				new ProdutoPadrao(3, "Resident Evil 4", "Games", 7, 79.90),
@@ -163,8 +202,8 @@ public void geraRelatorio(String arquivoSaida) throws IOException {
 				new ProdutoPadrao(29, "Alone in The Dark", "Games", 11, 59.00),
 				new ProdutoPadrao(30, "The Art of Computer Programming Vol. 1", "Livros", 3, 240.00),
 				new ProdutoPadrao(31, "The Art of Computer Programming Vol. 2", "Livros", 2, 200.00),
-				new ProdutoPadrao(32, "The Art of Computer Programming Vol. 3", "Livros", 4, 270.00));
-		return produtos;
+				new ProdutoPadrao(32, "The Art of Computer Programming Vol. 3", "Livros", 4, 270.00)); */
+        return produtos;
 	}
 
 	public static void main(String[] args) {

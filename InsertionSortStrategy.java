@@ -9,15 +9,12 @@ public class InsertionSortStrategy implements OrdenacaoStrategy {
 
     @Override
     public void ordenar(List<Produto> produtos) {
-        // Implementação do Insertion Sort de acordo com o critério de ordenação
-        // (criterio) que pode ser "descricao_c", "preco_c" ou "estoque_c".
         for (int i = 1; i < produtos.size(); i++) {
             Produto key = produtos.get(i);
             int j = i - 1;
 
             while (j >= 0 && compare(produtos.get(j), key) > 0) {
                 produtos.set(j + 1, produtos.get(j));
-                //produtos[j + 1] = produtos[j];
                 j--;
             }
 
@@ -26,8 +23,27 @@ public class InsertionSortStrategy implements OrdenacaoStrategy {
     }
 
     private int compare(Produto p1, Produto p2) {
-        // A lógica de comparação vai depender do critério escolhido
-        // Neste exemplo, estamos comparando pelo atributo de descrição em ordem crescente
-        return p1.getDescricao().compareToIgnoreCase(p2.getDescricao());
+        if (criterio.equals(GeradorDeRelatorios.CRIT_DESC_CRESC)) {
+            return p1.getDescricao().compareToIgnoreCase(p2.getDescricao());
+        } else if (criterio.equals(GeradorDeRelatorios.CRIT_PRECO_CRESC)) {
+            if (p1.getPreco() < p2.getPreco()) {
+                return -1; 
+            } else if (p1.getPreco() > p2.getPreco()) {
+                return 1; 
+            } else {
+                return 0; 
+            }
+        } else if (criterio.equals(GeradorDeRelatorios.CRIT_ESTOQUE_CRESC)) {
+            if (p1.getQtdEstoque() < p2.getQtdEstoque()) {
+                return -1; 
+            } else if (p1.getQtdEstoque() > p2.getQtdEstoque()) {
+                return 1; 
+            } else {
+                return 0; 
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid sorting criterion: " + criterio);
+        }
     }
+    
 }
