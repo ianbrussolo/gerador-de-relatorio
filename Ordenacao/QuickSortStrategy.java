@@ -1,7 +1,14 @@
+package Ordenacao;
 import java.util.*;
+
+import Produto.Produto;
 
 public class QuickSortStrategy implements OrdenacaoStrategy {
     private String criterio;
+
+    public static final String CRIT_DESC_CRESC = "descricao_c";
+	public static final String CRIT_PRECO_CRESC = "preco_c";
+	public static final String CRIT_ESTOQUE_CRESC = "estoque_c";
 
     public QuickSortStrategy(String criterio) {
         this.criterio = criterio;
@@ -46,9 +53,9 @@ public class QuickSortStrategy implements OrdenacaoStrategy {
     }
 
     private int compare(Produto p1, Produto p2) {
-        if (criterio.equals(GeradorDeRelatorios.CRIT_DESC_CRESC)) {
+        if (criterio.equals(CRIT_DESC_CRESC)) {
             return p1.getDescricao().compareToIgnoreCase(p2.getDescricao());
-        } else if (criterio.equals(GeradorDeRelatorios.CRIT_PRECO_CRESC)) {
+        } else if (criterio.equals(CRIT_PRECO_CRESC)) {
             if (p1.getPreco() < p2.getPreco()) {
                 return -1; 
             } else if (p1.getPreco() > p2.getPreco()) {
@@ -56,7 +63,7 @@ public class QuickSortStrategy implements OrdenacaoStrategy {
             } else {
                 return 0; 
             }
-        } else if (criterio.equals(GeradorDeRelatorios.CRIT_ESTOQUE_CRESC)) {
+        } else if (criterio.equals(CRIT_ESTOQUE_CRESC)) {
             if (p1.getQtdEstoque() < p2.getQtdEstoque()) {
                 return -1; 
             } else if (p1.getQtdEstoque() > p2.getQtdEstoque()) {

@@ -1,9 +1,23 @@
 import java.io.PrintWriter;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.*;
+
+import Filtro.FiltroCategoria;
+import Filtro.FiltroEstoque;
+import Filtro.FiltroStrategy;
+import Ordenacao.InsertionSortStrategy;
+import Ordenacao.OrdenacaoStrategy;
+import Ordenacao.QuickSortStrategy;
+import Produto.CorDecorator;
+import Produto.ItalicoDecorator;
+import Produto.NegritoDecorator;
+import Produto.Produto;
+import Produto.ProdutoPadrao;
 
 public class GeradorDeRelatorios {
 
@@ -93,25 +107,7 @@ public void geraRelatorio(String arquivoSaida) throws IOException {
 
         for (Produto p : produtosFiltrados) {
             out.print("<li>");
-
-            /* if ((format_flags & FORMATO_ITALICO) > 0) {
-                out.print("<span style=\"font-style:italic\">");
-            }
-
-            if ((format_flags & FORMATO_NEGRITO) > 0) {
-                out.print("<span style=\"font-weight:bold\">");
-            } */
-
             out.print(p.formataParaImpressao());
-
-            /* if ((format_flags & FORMATO_NEGRITO) > 0) {
-                out.print("</span>");
-            }
-
-            if ((format_flags & FORMATO_ITALICO) > 0) {
-                out.print("</span>");
-            } */
-
             out.println("</li>");
             count++;
         }
@@ -123,51 +119,32 @@ public void geraRelatorio(String arquivoSaida) throws IOException {
     } // O recurso PrintWriter é automaticamente fechado ao sair do bloco try
 }
 
-	public static List<Produto> carregaProdutos() {
+	public static List<Produto> carregaProdutos() throws IOException {
 		List<Produto> produtos = new ArrayList<Produto>();
-		Scanner in;
-		try {
-            in = new Scanner(new File("produtos.csv"));
-			if (in.hasNextLine()) {
-				in.nextLine();
-			}
+		
+		try(BufferedReader br = new BufferedReader(new FileReader("produtos.csv"))) {
+			String line = br.readLine(); //pula a primeira linha do csv
 
-			List<String[]> lines = new ArrayList<String[]>();
-        	while (in.hasNextLine()) {
-				String line = in.nextLine();
-				String[] arr = line.split(", ");
-				lines.add(arr);          
-        	}
-
-			for (String[] line : lines) {
-                int id = Integer.parseInt(line[0]);
-                String descricao = line[1];
-                String categoria = line[2];
-                int qtd = Integer.parseInt(line[3]);
-                double preco = Double.parseDouble(line[4]);
-
-                Produto produto = new ProdutoPadrao(id, descricao, categoria, qtd, preco);
-
-                boolean negrito = Boolean.parseBoolean(line[5]);
-                boolean italico = Boolean.parseBoolean(line[6]);
-                String cor = line[7];
-
-                if (negrito) {
-                    produto = new NegritoDecorator(produto);
-                }
-                if (italico) {
-                    produto = new ItalicoDecorator(produto);
-                }
-                if (!cor.isEmpty()) {
-                    produto = new CorDecorator(produto, cor);
-                }
-
+            while ((line = br.readLine()) != null) {
+                String[] infoProduto = line.split(", ");
+                int id = Integer.parseInt(infoProduto[0]);
+                String descricao = infoProduto[1];
+                String categoria = infoProduto[2];
+                int qtdEstoque = Integer.parseInt(infoProduto[3]);
+                double preco = Double.parseDouble(infoProduto[4]);
+                boolean negrito = Boolean.parseBoolean(infoProduto[5]);
+                boolean italico = Boolean.parseBoolean(infoProduto[6]);
+                String cor = infoProduto[7];
+                Produto produto = new ProdutoPadrao(id, descricao, categoria, qtdEstoque, preco);
+                if(negrito == true) {produto = new NegritoDecorator(produto);}
+                if(italico == true) { produto = new ItalicoDecorator(produto);}
+                produto = new CorDecorator(produto, cor);
                 produtos.add(produto);
             }
-            in.close();
-
         } catch (FileNotFoundException e) {
             System.out.println("File not found: produtos.csv");
+		} catch (IOException e) {
+			System.out.println("Error reading file: " + e.getMessage());
 		}
 		/* List<Produto> produtos = List.of(
 				new ProdutoPadrao(1, "O Hobbit", "Livros", 2, 34.90),
@@ -206,7 +183,7 @@ public void geraRelatorio(String arquivoSaida) throws IOException {
         return produtos;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		if (args.length < 4) {
 
@@ -249,7 +226,7 @@ public void geraRelatorio(String arquivoSaida) throws IOException {
 				formato);
 
 		try {
-			gdr.geraRelatorio("saida.html");
+			gdr.geraRelatorio("quick.html");
 		} catch (IOException e) {
 
 			e.printStackTrace();

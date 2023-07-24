@@ -1,5 +1,8 @@
+package Filtro;
 import java.util.ArrayList;
 import java.util.List;
+
+import Produto.Produto;
 
 public class FiltroEstoque implements FiltroStrategy {
     @Override
